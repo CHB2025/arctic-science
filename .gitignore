@@ -1,2 +1,2 @@
-scripts/transcripts/*
-**/output/*
+scripts/transcripts
+**/output
