@@ -1,0 +1,4 @@
+node_modules
+dist
+testFiles
+private.config.json

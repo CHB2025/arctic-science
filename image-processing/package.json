@@ -1,0 +1,19 @@
+{
+   "name": "image-processing",
+   "version": "1.0.0",
+   "description": "",
+   "main": "index.js",
+   "scripts": {
+      "build": "npx tsc",
+      "start": "npx tsc && node ./dist/index.js"
+   },
+   "author": "",
+   "license": "MIT",
+   "dependencies": {
+      "@google-cloud/vision": "^2.4.2",
+      "axios": "^0.27.2"
+   },
+   "devDependencies": {
+      "typescript": "^4.6.4"
+   }
+}
