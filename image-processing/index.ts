@@ -1,4 +1,5 @@
 import { ImageAnnotatorClient } from "@google-cloud/vision"
+import { google } from "@google-cloud/vision/build/protos/protos"
 import fs from "fs/promises"
 import path from "path"
 import * as config from "./private.config.json"
@@ -10,13 +11,16 @@ const client = new ImageAnnotatorClient({
    }
 })
 
-const makeRequest = async (files: Buffer[]) => {
-   const [response] = await client.batchAnnotateImages({
-      requests: files.map((val) => ({
-         image: {
-            content: val.toString('base64')
+const makeRequest = async (file: Buffer) => {
+   const [response] = await client.annotateImage({
+      image: {
+         content: file.toString('base64')
+      },
+      features: [
+         {
+            type: "LABEL_DETECTION"
          }
-      }))
+      ]
    })
    return response
 }
@@ -24,17 +28,20 @@ const makeRequest = async (files: Buffer[]) => {
 const main = async () => {
    const folder = await fs.opendir("./testFiles")
    let img = await folder.read()
-   const files: Buffer[] = []
+   let count = 0;
+   const data: Record<string, google.cloud.vision.v1.IAnnotateFileResponse> = {}
    while (img !== null) {
       if (img.isFile() && ['.JPG', '.PNG'].includes(path.extname(img.name))) {
          const file = await fs.readFile("./testFiles/" + img.name)
-         files.push(file)
+         data[img.name] = await makeRequest(file)
       }
       img = await folder.read()
+      count++
+      console.log('Done', count)
    }
-   await fs.writeFile("./output/response.json", "{}")
-   const jsonResponse = await makeRequest(files)
-   await fs.writeFile("./output/response.json", JSON.stringify(jsonResponse))
+
+   await fs.writeFile("./output/response.json", JSON.stringify(data))
+   console.log('saved')
 
 }
 
